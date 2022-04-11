@@ -6,6 +6,23 @@ A `Mangler` is a golang text transformation function with the signature:
 func transform(*File) []byte
 ```
 
+Create a mangler and add it to the registry:
+```go
+package manglers
+
+//...
+
+var Registry = map[string]Mangler{
+	"p": parse_location_csv.Mangle,
+	"parse_location_csv": parse_location_csv.Mangle,
+}
+```
+Pass the key as an argument to the `-mangler=` flag:
+```bash
+$ cat ~/example.csv | go run main.go -mangler=p > ~/delete_this.json
+```
 DONE read/write from stdout
+
 TODO read from file
+
 TODO write to file
