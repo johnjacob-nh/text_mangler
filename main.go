@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"path"
-	"text_mangler/manglers/parse_location_csv"
+	"text_mangler/manglers"
 )
-
 
 
 func main() {
@@ -27,32 +27,33 @@ func main() {
 		pth := path.Clean(*inPtr)
 		in, err = os.Open(pth)
 		if err != nil {
-			fmt.Printf("err: %s\n", err)
+			log.Fatal(err)
 		}
 	}
 
+	fmt.Println("bloop")
 	if *outPtr == "" {
 		out = os.Stdout
 	} else {
 		pth := path.Clean(*outPtr)
 		out, err = os.Open(pth)
 		if err != nil {
-			fmt.Printf("err: %s\n", err)
+			log.Fatal(err)
 		}
 	}
+
 	defer in.Close()
 	defer out.Close()
 
-	switch *manglerPtr {
-	case "p":
-		fallthrough
-	case "parse_location":
-		mangler = parse_location_csv.Mangle
+	mangler, ok := manglers.Registry[*manglerPtr]
+	if !ok {
+		err = fmt.Errorf("mangler with name %s not found in registry", *manglerPtr)
+		log.Fatal(err)
 	}
 
 	output := mangler(in)
 	_, err = out.Write(output)
 	if err != nil {
-		fmt.Printf("err: %s\n", err)
+		log.Fatal(err)
 	}
 }
