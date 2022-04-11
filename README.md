@@ -19,10 +19,10 @@ var Registry = map[string]Mangler{
 ```
 Pass the key as an argument to the `-mangler=` flag:
 ```bash
-$ cat ~/example.csv | go run main.go -mangler=p > ~/delete_this.json
+# in a pipe
+cat ~/example.csv | ./text_mangler -mangler=p > ~/delete_this.json
 ```
-DONE read/write from stdout
-
-TODO read from file
-
-TODO write to file
+```bash
+# with file flags
+./text_mangler -mangler=p -infile=../Desktop/texas.csv -outfile=../Desktop/delete_this.json
+```
