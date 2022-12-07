@@ -8,15 +8,17 @@ import (
 	"log"
 	"math"
 	"os"
+	"strings"
 )
 
 const namesPerFile = 500
-const filenamePrefix = "insurance_companies"
 
 type insuranceCompany struct {
-	Name       string `json:"name"`
-	ChcPayorId string `json:"chc_payor_id"`
-	Type       string `json:"type"`
+	Name          string `json:"name"`
+	ChcPayorId    string `json:"chc_payor_id"`
+	EligibilityId string `json:"eligibility_id"`
+	Type          string `json:"type"`
+	ClaimType     string `json:"claim_type"`
 }
 
 func Mangle(f *os.File) []byte {
@@ -27,14 +29,20 @@ func Mangle(f *os.File) []byte {
 		log.Fatal(err)
 	}
 
+	filenamePrefix := f.Name()
+
 	insuranceCompanies := make([]*insuranceCompany, 0)
 	for _, row := range data[1:] {
-		chcPayorId := row[0]
-		name := row[4]
+		chcPayorId := strings.TrimSpace(row[0])
+		eligibilityId := strings.TrimSpace(row[2])
+		name := strings.TrimSpace(row[4])
+		claimType := strings.TrimSpace(row[5])
 		insuranceCompany := &insuranceCompany{
-			Name:       name,
-			ChcPayorId: chcPayorId,
-			Type:       "private_insurance",
+			Name:          name,
+			ChcPayorId:    chcPayorId,
+			Type:          "private_insurance",
+			ClaimType:     claimType,
+			EligibilityId: eligibilityId,
 		}
 		insuranceCompanies = append(insuranceCompanies, insuranceCompany)
 	}
