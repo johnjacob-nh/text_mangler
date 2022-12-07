@@ -8,6 +8,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -29,14 +30,16 @@ func Mangle(f *os.File) []byte {
 		log.Fatal(err)
 	}
 
-	filenamePrefix := f.Name()
+	filename := f.Name()
+	fileExtension := path.Ext(filename)
+	filenamePrefix := strings.Trim(filename, fileExtension)
 
 	insuranceCompanies := make([]*insuranceCompany, 0)
 	for _, row := range data[1:] {
 		chcPayorId := strings.TrimSpace(row[0])
 		eligibilityId := strings.TrimSpace(row[2])
 		name := strings.TrimSpace(row[4])
-		claimType := strings.TrimSpace(row[5])
+		claimType := strings.ToLower(strings.TrimSpace(row[5]))
 		insuranceCompany := &insuranceCompany{
 			Name:          name,
 			ChcPayorId:    chcPayorId,
